@@ -4,12 +4,13 @@ import Link from 'next/link'
 
 const HOOK_TYPES = ['alle', 'curiosity', 'bold_claim', 'question', 'story', 'contrast']
 
-export default async function Home({ searchParams }: { searchParams: { hook?: string } }) {
-  const aktiv = searchParams?.hook || 'alle'
-  
+export default async function Home({ searchParams }: { searchParams: Promise<{ hook?: string }> }) {
+  const { hook } = await searchParams
+  const aktiv = hook || 'alle'
+
   let query = supabase.from('reels').select('*').order('created_at', { ascending: false })
   if (aktiv !== 'alle') query = query.eq('hook_type', aktiv)
-  
+
   const { data: reels } = await query
 
   return (
